@@ -102,6 +102,7 @@ public class App
      * @param ID The employee number to search for.
      * @return An Employee object containing the employee's details, or null if not found.
      */
+
     public Employee getEmployee(int ID)
     {
         try
@@ -110,9 +111,8 @@ public class App
             Statement stmt = con.createStatement();
             // Create string for SQL statement
             String strSelect =
-                    "SELECT emp_no, first_name, last_name "
-                            + "FROM employees "
-                            + "WHERE emp_no = " + ID;
+                    "SELECT ID, Name, CountryCode, District "
+                            + "FROM city ";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Return new employee if valid.
