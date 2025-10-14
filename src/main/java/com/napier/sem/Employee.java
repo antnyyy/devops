@@ -1,3 +1,8 @@
+/****
+ * The Employee class represents an employee entity within the organization.
+ * It stores key details such as employee number, name, title, salary,
+ * department, and manager.
+ */
 package com.napier.sem;
 
 /**
@@ -41,5 +46,4 @@ public class Employee
      */
     public String manager;
 }
-
 
