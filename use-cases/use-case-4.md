@@ -1,7 +1,7 @@
 Use Case 1: Generate List of Countries by Population (Largest to Smallest)
 
 Goal in Context
-As a data analyst, I want to generate a list of all the countries in the world, organized by their population from largest to smallest, so that stakeholders can analyze global population distributions.
+As a Product Manager, I want to generate a list of all the countries in the world, organized by their population from largest to smallest, so that stakeholders can analyze global population distributions.
 
 Scope
 Global country population data.
@@ -22,7 +22,7 @@ Failed End Condition
 No report is generated due to lack of data or access.
 
 Primary Actor
-Data Analyst.
+Product Manager.
 
 Trigger
 Request from a stakeholder or a need for global population data.
