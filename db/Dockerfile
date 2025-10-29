@@ -10,5 +10,5 @@ COPY test_db/*.dump /tmp/
 # This is specific to MySQL.
 COPY test_db/employees.sql /docker-entrypoint-initdb.d
 # Set the root password
-ENV MYSQL_ROOT_PASSWORD example
+ENV MYSQL_ROOT_PASSWORD=example
 ENV MYSQL_ROOT_HOST=%
