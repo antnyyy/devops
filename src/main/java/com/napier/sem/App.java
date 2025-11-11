@@ -14,7 +14,6 @@ public class App {
         CityReports cityReports = new CityReports(db);
         LanguageReports languageReports = new LanguageReports(db);
 
-        // ---- Example calls ----
         var topCities = cityReports.getTopCitiesWorldwide(10);
         cityReports.printCities(topCities);
 
@@ -23,7 +22,7 @@ public class App {
 
         var big5 = languageReports.getTopFiveLanguagesBySpeakers();
         languageReports.printLanguages(big5);
-        // -----------------------
+
 
         db.disconnect();
     }
