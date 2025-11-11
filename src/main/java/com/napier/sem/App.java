@@ -1,177 +1,248 @@
-/**
- * The App class serves as the entry point for the application.
- * It connects to a MySQL database, retrieves employee information,
- * displays it, and then disconnects from the database.
- */
 package com.napier.sem;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 
-public class App
+public class App {
 
-{
-    /**
-     * The main method is the entry point of the application.
-     * It creates an instance of the App, connects to the database,
-     * retrieves an employee record, displays it, and then disconnects.
-     */
-    public static void main(String[] args)
-    {
-        // Create new Application
+    // DB connection
+    private Connection con = null;
+
+    public static void main(String[] args) {
         App a = new App();
-
-        // Connect to database
         a.connect();
-        // Get Employee
-        Employee emp = a.getEmployee(255530);
-        // Display results
-        a.displayEmployee(emp);
-
-        // Disconnect from database
+        a.menu();
         a.disconnect();
     }
 
-    /** Connection to MySQL database.
-     */
-    private Connection con = null;
-
-    /**
-     * Establishes a connection to the MySQL database.
-     * Retries several times if the connection fails initially.
-     * Uses the MySQL JDBC driver for connectivity.
-     */
-    public void connect()
-    {
-        try
-        {
-            // Load Database driver
+    public void connect() {
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-        }
-        catch (ClassNotFoundException e)
-        {
+        } catch (ClassNotFoundException e) {
             System.out.println("Could not load SQL driver");
             System.exit(-1);
         }
 
         int retries = 10;
-        for (int i = 0; i < retries; ++i)
-        {
+        for (int i = 0; i < retries; ++i) {
             System.out.println("Connecting to database...");
-            try
-            {
-                // Wait a bit for db to start
+            try {
                 Thread.sleep(3000);
-                // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://localhost:33060/employees?allowPublicKeyRetrieval=true&useSSL=false", "root", "example");
+                con = DriverManager.getConnection(
+                        "jdbc:mysql://db:3306/world?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
+                        "root",
+                        "example"
+                );
                 System.out.println("Successfully connected");
                 break;
-            }
-            catch (SQLException sqle)
-            {
-                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
+            } catch (SQLException sqle) {
+                System.out.println("Failed to connect to database attempt " + i);
                 System.out.println(sqle.getMessage());
-            }
-            catch (InterruptedException ie)
-            {
-                System.out.println("Thread interrupted? Should not happen.");
-            }
+            } catch (InterruptedException ignored) {}
         }
     }
 
-    /**
-     * Closes the connection to the MySQL database if it is open.
-     */
-    public void disconnect()
-    {
-        if (con != null)
-        {
-            try
-            {
-                // Close connection
-                con.close();
-            }
-            catch (Exception e)
-            {
-                System.out.println("Error closing connection to database");
-            }
+    public void disconnect() {
+        if (con != null) {
+            try { con.close(); } catch (Exception ignored) {}
         }
     }
-    /**
-     * Retrieves an employee record from the database based on the given employee ID.
-     *
-     * @param ID The employee number to search for.
-     * @return An Employee object containing the employee's details, or null if not found.
-     */
-    public Employee getEmployee(int ID)
-    {
-        try
-        {
-            // Create an SQL statement
-            Statement stmt = con.createStatement();
-            // Create string for SQL statement
-            String strSelect =
-                    "SELECT emp_no, first_name, last_name "
-                            + "FROM employees "
-                            + "WHERE emp_no = " + ID;
-            // Execute SQL statement
-            ResultSet rset = stmt.executeQuery(strSelect);
-            // Return new employee if valid.
-            // Check one is returned
-            if (rset.next())
-            {
-                Employee emp = new Employee();
-                emp.emp_no = rset.getInt("emp_no");
-                emp.first_name = rset.getString("first_name");
-                emp.last_name = rset.getString("last_name");
-                return emp;
+
+    // Models
+    public static class City {
+        public int id;
+        public String name;
+        public String countryCode;
+        public String district;
+        public int population;
+    }
+
+    public static class Country {
+        public String code;
+        public String name;
+        public long population;
+    }
+
+    public static class ContinentPop {
+        public String continent;
+        public long population;
+    }
+
+    //Reports
+    public City getCity(int id) {
+        if (con == null) { System.out.println("No DB connection."); return null; }
+        String sql = "SELECT ID, Name, CountryCode, District, Population FROM city WHERE ID = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    City c = new City();
+                    c.id = rs.getInt("ID");
+                    c.name = rs.getString("Name");
+                    c.countryCode = rs.getString("CountryCode");
+                    c.district = rs.getString("District");
+                    c.population = rs.getInt("Population");
+                    return c;
+                }
             }
-            else
-                return null;
+        } catch (SQLException e) {
+            System.out.println("Failed to get city: " + e.getMessage());
         }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-            System.out.println("Failed to get employee details");
-            return null;
-        }
+        return null;
     }
-    /**
-     * Displays the details of the provided Employee object in the console.
-     *
-     * @param emp The Employee object to display.
-     */
-    public void displayEmployee(Employee emp)
-    {
-        if (emp != null)
-        {
-            System.out.println(
-                    emp.emp_no + " "
-                            + emp.first_name + " "
-                            + emp.last_name + "\n"
-                            + emp.title + "\n"
-                            + "Salary:" + emp.salary + "\n"
-                            + emp.dept_name + "\n"
-                            + "Manager: " + emp.manager + "\n");
+
+    public List<City> getTopCitiesInCountry(String countryCode, int limit) {
+        List<City> cities = new ArrayList<>();
+        if (con == null) { System.out.println("No DB connection."); return cities; }
+        String sql = "SELECT ID, Name, CountryCode, District, Population " +
+                "FROM city WHERE CountryCode = ? " +
+                "ORDER BY Population DESC LIMIT ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, countryCode);
+            ps.setInt(2, Math.max(1, limit));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    City c = new City();
+                    c.id = rs.getInt("ID");
+                    c.name = rs.getString("Name");
+                    c.countryCode = rs.getString("CountryCode");
+                    c.district = rs.getString("District");
+                    c.population = rs.getInt("Population");
+                    cities.add(c);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to get cities: " + e.getMessage());
         }
+        return cities;
     }
-    public void printSalaries(ArrayList<Employee> employees)
-    {
-        // Check employees is not null
-        if (employees == null)
-        {
-            System.out.println("No employees");
-            return;
+
+    public List<Country> getTopCountriesByPopulation(int limit) {
+        List<Country> out = new ArrayList<>();
+        if (con == null) { System.out.println("No DB connection."); return out; }
+        String sql = "SELECT Code, Name, Population FROM country ORDER BY Population DESC LIMIT ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, Math.max(1, limit));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Country c = new Country();
+                    c.code = rs.getString("Code");
+                    c.name = rs.getString("Name");
+                    c.population = rs.getLong("Population");
+                    out.add(c);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to get countries: " + e.getMessage());
         }
-        // Print header
-        System.out.println(String.format("%-10s %-15s %-20s %-8s", "Emp No", "First Name", "Last Name", "Salary"));
-        // Loop over all employees in the list
-        for (Employee emp : employees)
-        {
-            String emp_string =
-                    String.format("%-10s %-15s %-20s %-8s",
-                            emp.emp_no, emp.first_name, emp.last_name, emp.salary);
-            System.out.println(emp_string);
+        return out;
+    }
+
+    public List<ContinentPop> getPopulationByContinent() {
+        List<ContinentPop> out = new ArrayList<>();
+        if (con == null) { System.out.println("No DB connection."); return out; }
+        String sql = "SELECT Continent, SUM(Population) AS Pop FROM country GROUP BY Continent ORDER BY Pop DESC";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                ContinentPop cp = new ContinentPop();
+                cp.continent = rs.getString("Continent");
+                cp.population = rs.getLong("Pop");
+                out.add(cp);
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to aggregate population by continent: " + e.getMessage());
+        }
+        return out;
+    }
+
+    // Display helpers
+    public void displayCity(City c) {
+        if (c == null) { System.out.println("City not found."); return; }
+        System.out.println("ID: " + c.id);
+        System.out.println("Name: " + c.name);
+        System.out.println("CountryCode: " + c.countryCode);
+        System.out.println("District: " + c.district);
+        System.out.println("Population: " + c.population);
+        System.out.println();
+    }
+
+    public void displayCities(List<City> cities) {
+        if (cities == null || cities.isEmpty()) { System.out.println("No cities."); return; }
+        System.out.printf("%-6s %-30s %-8s %-20s %-12s%n",
+                "ID", "Name", "Code", "District", "Population");
+        for (City c : cities) {
+            System.out.printf("%-6d %-30s %-8s %-20s %-12d%n",
+                    c.id, c.name, c.countryCode, c.district, c.population);
+        }
+        System.out.println();
+    }
+
+    public void displayCountries(List<Country> countries) {
+        if (countries == null || countries.isEmpty()) { System.out.println("No countries."); return; }
+        System.out.printf("%-8s %-40s %-14s%n", "Code", "Name", "Population");
+        for (Country c : countries) {
+            System.out.printf("%-8s %-40s %-14d%n", c.code, c.name, c.population);
+        }
+        System.out.println();
+    }
+
+    public void displayContinentPops(List<ContinentPop> list) {
+        if (list == null || list.isEmpty()) { System.out.println("No data."); return; }
+        System.out.printf("%-20s %-18s%n", "Continent", "Population");
+        for (ContinentPop cp : list) {
+            System.out.printf("%-20s %-18d%n", cp.continent, cp.population);
+        }
+        System.out.println();
+    }
+
+    //  Menu
+    private void menu() {
+        try (Scanner sc = new Scanner(System.in)) {
+            while (true) {
+                System.out.println("\n=== Reports ===");
+                System.out.println("1) City by ID");
+                System.out.println("2) Top N cities in a country");
+                System.out.println("3) Top N countries by population");
+                System.out.println("4) Population by continent");
+                System.out.println("q) Quit");
+                System.out.print("Choose: ");
+                String choice = sc.nextLine().trim();
+
+                switch (choice) {
+                    case "1": {
+                        System.out.print("Enter City ID: ");
+                        int id = Integer.parseInt(sc.nextLine().trim());
+                        displayCity(getCity(id));
+                        break;
+                    }
+                    case "2": {
+                        System.out.print("Enter CountryCode (e.g., GBR): ");
+                        String code = sc.nextLine().trim().toUpperCase();
+                        System.out.print("Enter N (e.g., 10): ");
+                        int n = Integer.parseInt(sc.nextLine().trim());
+                        displayCities(getTopCitiesInCountry(code, n));
+                        break;
+                    }
+                    case "3": {
+                        System.out.print("Enter N (e.g., 10): ");
+                        int n = Integer.parseInt(sc.nextLine().trim());
+                        displayCountries(getTopCountriesByPopulation(n));
+                        break;
+                    }
+                    case "4": {
+                        displayContinentPops(getPopulationByContinent());
+                        break;
+                    }
+                    case "q":
+                    case "Q":
+                        return;
+                    default:
+                        System.out.println("Invalid choice.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Menu error: " + e.getMessage());
         }
     }
 }

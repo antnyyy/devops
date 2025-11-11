@@ -1,14 +1,26 @@
-version: '3'
+version: '3.8'
+
 services:
-  # Application Dockerfile is in same folder which is .
+  # App
   app:
     build: .
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
 
-  # db is is db folder
+  # DB
   db:
     build: db/.
     restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: world
     ports:
       - "33060:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pexample"]
+      interval: 5s
+      retries: 15
