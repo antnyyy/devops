@@ -1,29 +1,35 @@
 package com.napier.sem;
 
 import com.napier.sem.reports.CityReports;
-import com.napier.sem.reports.CountryReports;
-import com.napier.sem.reports.LanguageReports;
 
 public class App {
     public static void main(String[] args) {
+        // Initialize the database connection
         Database db = new Database();
-        String url = "jdbc:mysql://localhost:33060/world?allowPublicKeyRetrieval=true&useSSL=false";
-        db.connect(url, "root", "example");
+        try {
+            System.out.println("Connecting to database...");
+            // Provide the database URL, username, and password
+            db.connect("jdbc:mysql:///world?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC", "root", "your_new_root_password");
+            System.out.println("Successfully connected");
 
-        CountryReports countryReports = new CountryReports(db);
-        CityReports cityReports = new CityReports(db);
-        LanguageReports languageReports = new LanguageReports(db);
+            // Create CityReports instance
+            CityReports cityReports = new CityReports(db);
 
-        var topCities = cityReports.getTopCitiesWorldwide(10);
-        cityReports.printCities(topCities);
+            // 1. Print all cities in the world
+            System.out.println("\n=== All Cities in the World ===");
+            cityReports.getAllCities().forEach(System.out::println);
 
-        var topCountries = countryReports.getTopCountriesWorldwide(10);
-        countryReports.printCountries(topCountries);
+            // 2. Print cities for a specific country (e.g., Netherlands - NLD)
+            String countryCode = "NLD";
+            System.out.println("\n=== Cities in " + countryCode + " ===");
+            cityReports.getCitiesByCountry(countryCode).forEach(System.out::println);
 
-        var big5 = languageReports.getTopFiveLanguagesBySpeakers();
-        languageReports.printLanguages(big5);
-
-
-        db.disconnect();
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+        } finally {
+            System.out.println("Disconnecting...");
+            db.disconnect();
+            System.out.println("Disconnected.");
+        }
     }
 }

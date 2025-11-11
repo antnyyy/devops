@@ -3,50 +3,96 @@ package com.napier.sem.reports;
 import com.napier.sem.Database;
 import com.napier.sem.models.City;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CityReports {
-    private Database db;
+    private final Database db;
 
     public CityReports(Database db) {
         this.db = db;
     }
 
-    public ArrayList<City> getTopCitiesWorldwide(int limit) {
-        ArrayList<City> cities = new ArrayList<>();
+    // Helper class to represent a City
+    public static class City {
+        public int id;
+        public String name;
+        public String countryCode;
+        public String district;
+        public int population;
 
-        try {
-            String sql = "SELECT ci.ID, ci.Name, co.Name AS Country, ci.District, ci.Population "
-                    + "FROM city ci JOIN country co ON ci.CountryCode = co.Code "
-                    + "ORDER BY ci.Population DESC LIMIT " + limit;
-
-            Statement stmt = db.getConnection().createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
-                City c = new City();
-                c.id = rs.getInt("ID");
-                c.name = rs.getString("Name");
-                c.country = rs.getString("Country");
-                c.district = rs.getString("District");
-                c.population = rs.getInt("Population");
-                cities.add(c);
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error getting top cities: " + e.getMessage());
+        public City(int id, String name, String countryCode, String district, int population) {
+            this.id = id;
+            this.name = name;
+            this.countryCode = countryCode;
+            this.district = district;
+            this.population = population;
         }
 
+        @Override
+        public String toString() {
+            return "City{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", countryCode='" + countryCode + '\'' +
+                    ", district='" + district + '\'' +
+                    ", population=" + population +
+                    '}';
+        }
+    }
+
+    // Report: Get all cities in the world
+    public List<City> getAllCities() {
+        List<City> cities = new ArrayList<>();
+        String sql = "SELECT ID, Name, CountryCode, District, Population FROM city ORDER BY Name";
+
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                City city = new City(
+                        rs.getInt("ID"),
+                        rs.getString("Name"),
+                        rs.getString("CountryCode"),
+                        rs.getString("District"),
+                        rs.getInt("Population")
+                );
+                cities.add(city);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error executing getAllCities: " + e.getMessage());
+        }
         return cities;
     }
 
-    public void printCities(ArrayList<City> cities) {
-        System.out.println("Top Cities in the World");
-        System.out.println("ID | City | Country | District | Population");
+    // Report: Get cities by country code
+    public List<City> getCitiesByCountry(String countryCode) {
+        List<City> cities = new ArrayList<>();
+        String sql = "SELECT ID, Name, CountryCode, District, Population FROM city WHERE CountryCode = ? ORDER BY Population DESC";
 
-        for (City c : cities) {
-            System.out.println(c.id + " | " + c.name + " | " + c.country + " | " + c.district + " | " + c.population);
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, countryCode);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    City city = new City(
+                            rs.getInt("ID"),
+                            rs.getString("Name"),
+                            rs.getString("CountryCode"),
+                            rs.getString("District"),
+                            rs.getInt("Population")
+                    );
+                    cities.add(city);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error executing getCitiesByCountry: " + e.getMessage());
         }
-    }
-}
+        return cities;
+    }}
