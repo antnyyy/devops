@@ -1,7 +1,5 @@
 package com.napier.sem.reports;
 
-import com.napier.sem.Helpers;
-import com.napier.sem.Database;
 import com.napier.sem.report.CountryReport;
 
 import java.sql.ResultSet;

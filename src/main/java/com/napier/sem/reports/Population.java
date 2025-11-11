@@ -1,6 +1,5 @@
 package com.napier.sem.reports;
 
-import com.napier.sem.Helpers;
 import com.napier.sem.database.DB;
 import com.napier.sem.report.PopulationReport;
 
