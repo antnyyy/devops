@@ -1,6 +1,7 @@
 package com.napier.sem.reports;
 
 import com.napier.sem.Database;
+import com.napier.sem.models.City;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
