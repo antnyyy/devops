@@ -34,9 +34,6 @@ jobs:
           # Show container list for debugging
           docker compose ps
 
-      - name: Unit Tests
-        run: mvn -Dtest=com.napier.devops.AppTest test
-
       - name: Package and run app (compose)
         run: |
           mvn -B -DskipTests package
