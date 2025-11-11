@@ -19,7 +19,7 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Build (skip tests for speed)
+      - name: Build
         run: mvn -B -DskipTests package
 
       - name: Run unit tests
