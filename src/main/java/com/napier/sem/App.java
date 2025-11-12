@@ -200,7 +200,7 @@ public class App {
     private void menu() {
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
-                System.out.println("\n=== Reports ===");
+                System.out.println("\n---- Reports ----");
                 System.out.println("1) City by ID");
                 System.out.println("2) Top N cities in a country");
                 System.out.println("3) Top N countries by population");
@@ -217,15 +217,15 @@ public class App {
                         break;
                     }
                     case "2": {
-                        System.out.print("Enter CountryCode (e.g., GBR): ");
+                        System.out.print("Enter CountryCode (e.g, GBR): ");
                         String code = sc.nextLine().trim().toUpperCase();
-                        System.out.print("Enter N (e.g., 10): ");
+                        System.out.print("Enter N (e.g, 10): ");
                         int n = Integer.parseInt(sc.nextLine().trim());
                         displayCities(getTopCitiesInCountry(code, n));
                         break;
                     }
                     case "3": {
-                        System.out.print("Enter N (e.g., 10): ");
+                        System.out.print("Enter N (e.g, 10): ");
                         int n = Integer.parseInt(sc.nextLine().trim());
                         displayCountries(getTopCountriesByPopulation(n));
                         break;
