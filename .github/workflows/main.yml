@@ -56,6 +56,15 @@ jobs:
       - name: Run tests
         run: mvn -B clean test
 
+      - name: List coverage files
+        run: |
+          echo "Listing target directory:"
+          ls -R
+          echo "Listing target/site:"
+          ls target/site || true
+          echo "Listing target/site/jacoco:"
+          ls target/site/jacoco || true
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
