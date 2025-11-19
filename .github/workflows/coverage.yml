@@ -19,10 +19,8 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # If you need Docker (for the DB), start it here, e.g.:
-      # - name: Start services
-      #   run: docker-compose up -d db
-      #   # then maybe wait a bit or health-check db before running mvn
+      - name: Start services
+        run: docker-compose up -d db
 
       - name: Build with Maven (run tests & coverage)
         run: mvn -B clean test
@@ -30,7 +28,7 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} # may be optional on public repos
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: target/site/jacoco/jacoco.xml
           fail_ci_if_error: true
           flags: unittests
