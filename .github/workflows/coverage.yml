@@ -19,9 +19,6 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Start services
-        run: docker-compose up -d db
-
       - name: Build with Maven (run tests & coverage)
         run: mvn -B clean test
 
