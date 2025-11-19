@@ -19,13 +19,17 @@ public class AppIntegrationTest {
 
     @BeforeAll
     static void init() {
-        String url = "jdbc:mysql://localhost:33060/world?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC";
-        String user = "root";
-        String pass = "example";
+        String url  = System.getenv().getOrDefault(
+                "DB_URL",
+                "jdbc:mysql://localhost:33060/world?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+        );
+        String user = System.getenv().getOrDefault("DB_USER", "root");
+        String pass = System.getenv().getOrDefault("DB_PASS", "example");
 
         app = new App(url, user, pass);
         app.connect();
     }
+
 
 
     @AfterAll
