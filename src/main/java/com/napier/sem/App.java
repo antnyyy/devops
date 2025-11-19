@@ -7,6 +7,25 @@ public class App {
 
     // DB connection
     private Connection con = null;
+    private final String dbUrl;
+    private final String dbUser;
+    private final String dbPassword;
+
+    // Default constructor – used in production / main()
+    public App() {
+        this(
+                "jdbc:mysql://db:3306/world?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
+                "root",
+                "example"
+        );
+    }
+
+    // Extra constructor – for tests or custom configs
+    public App(String dbUrl, String dbUser, String dbPassword) {
+        this.dbUrl = dbUrl;
+        this.dbUser = dbUser;
+        this.dbPassword = dbPassword;
+    }
 
     public static void main(String[] args) {
         App a = new App();
@@ -28,11 +47,7 @@ public class App {
             System.out.println("Connecting to database...");
             try {
                 Thread.sleep(3000);
-                con = DriverManager.getConnection(
-                        "jdbc:mysql://db:3306/world?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
-                        "root",
-                        "example"
-                );
+                con = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
                 System.out.println("Successfully connected");
                 break;
             } catch (SQLException sqle) {
@@ -41,6 +56,7 @@ public class App {
             } catch (InterruptedException ignored) {}
         }
     }
+
 
     public void disconnect() {
         if (con != null) {
@@ -200,7 +216,7 @@ public class App {
     private void menu() {
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
-                System.out.println("\n---- Reports ----");
+                System.out.println("\n=== Reports ===");
                 System.out.println("1) City by ID");
                 System.out.println("2) Top N cities in a country");
                 System.out.println("3) Top N countries by population");
@@ -217,15 +233,15 @@ public class App {
                         break;
                     }
                     case "2": {
-                        System.out.print("Enter CountryCode (e.g, GBR): ");
+                        System.out.print("Enter CountryCode (e.g., GBR): ");
                         String code = sc.nextLine().trim().toUpperCase();
-                        System.out.print("Enter N (e.g, 10): ");
+                        System.out.print("Enter N (e.g., 10): ");
                         int n = Integer.parseInt(sc.nextLine().trim());
                         displayCities(getTopCitiesInCountry(code, n));
                         break;
                     }
                     case "3": {
-                        System.out.print("Enter N (e.g, 10): ");
+                        System.out.print("Enter N (e.g., 10): ");
                         int n = Integer.parseInt(sc.nextLine().trim());
                         displayCountries(getTopCountriesByPopulation(n));
                         break;
