@@ -19,9 +19,6 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Build with Maven (run tests & coverage)
-        run: mvn -B clean test
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
