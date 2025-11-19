@@ -8,8 +8,7 @@
 [![Releases](https://img.shields.io/github/release/antnyyy/devops/all.svg?style=flat-square)](https://github.com/antnyyy/devops/releases)
 # Codecov
 [![codecov](https://codecov.io/gh/antnyyy/devops/branch/main/graph/badge.svg)](https://codecov.io/gh/antnyyy/devops)
-[![codecov](https://codecov.io/gh/anynyyy/devops/branch/main/graph/badge.svg?token=3DCI0BFR7G)](https://codecov.io/gh/antnyyy/devops) <br />
-[![codecov](https://codecov.io/gh/antnyyy/devops/branch/main/graphs/sunburst.svg?token=3DCI0BFR7G)](https://codecov.io/gh/antnyyy/devops)
+![Coverage Sunburst](https://codecov.io/gh/antnyyy/devops/branch/main/graphs/sunburst.svg)
 
 
 docker compose up -d db
