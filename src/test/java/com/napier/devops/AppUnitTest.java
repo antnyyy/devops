@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AppTest {
+class AppUnitTest {
 
     private final PrintStream originalOut = System.out;
     private ByteArrayOutputStream outContent;
