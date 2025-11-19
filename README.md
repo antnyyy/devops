@@ -10,5 +10,5 @@
 [![codecov](https://codecov.io/gh/antnyyy/devops/branch/main/graph/badge.svg)](https://codecov.io/gh/antnyyy/devops)
 
 
-
-
+docker compose up -d db
+docker compose run --rm app
