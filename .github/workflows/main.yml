@@ -1,4 +1,6 @@
 name: Java CI
+permissions:
+  contents: write
 
 on:
   push:
