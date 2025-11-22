@@ -1,6 +1,14 @@
 FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /workspace
 
+# Multi-stage build: useful in real CI/CD pipelines where the build
+# environment (heavy Maven image) is used to compile and assemble the
+# application, while a smaller, patched runtime image is used for the
+# final artifact to reduce attack surface and image size.
+#
+# Typical production flow: CI builds the assembly JAR in the builder
+# stage, then the runtime image contains only the single runnable JAR.
+
 # copy only what we need for a standard maven build
 COPY pom.xml ./
 COPY src ./src

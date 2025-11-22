@@ -7,6 +7,13 @@ on:
     branches: [ "**" ]
   pull_request:
 
+# Real-world CI notes:
+# - This workflow runs unit and integration tests inside GitHub Actions.
+# - The Create GitHub Release step is intentionally restricted so that
+#   releases are only created when code reaches `main` or when a tag is
+#   pushed (see the `if:` condition on the release step). This prevents
+#   accidental releases from feature branches.
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest

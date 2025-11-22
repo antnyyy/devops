@@ -10,6 +10,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for display and no-DB behaviour.
+ *
+ * Real-world scenario context:
+ * - These unit tests validate formatting and edge-case behaviour of the
+ *   presentation layer (e.g., how the CLI or a small support tool would
+ *   display records). They are fast to run and suitable for quick CI
+ *   pre-merge checks so developers get immediate feedback when refactoring
+ *   presentation code.
+ */
 class AppUnitTest {
 
     private final PrintStream originalOut = System.out;

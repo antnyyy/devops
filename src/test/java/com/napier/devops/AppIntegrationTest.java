@@ -9,6 +9,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests for App.java.
+ *
+ * Real-world scenario context:
+ * - These tests run against a live MySQL instance and are intended to be
+ *   executed in CI (or local integration test runs) to validate the
+ *   database schema and queries against the canonical "world" dataset.
+ * - The CI job brings up a MySQL service, imports `world.sql`, and then
+ *   runs these tests to catch regression in SQL, schema assumptions, or
+ *   environment configuration.
+ *
  * These tests assume a running MySQL instance with the "world" database,
  * reachable at jdbc:mysql://db:3306/world with user "root"/"example"
  * (i.e., the same settings used in App.connect()).

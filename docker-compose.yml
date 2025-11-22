@@ -1,5 +1,13 @@
 version: '3.8'
 
+# Docker Compose for local development and CI integration tests.
+#
+# Real-world usage:
+# - Developers can run `docker-compose up --build` to bring up an app
+#   container and a seeded MySQL instance for manual testing and demos.
+# - CI workflows may use a similar service layout to run integration
+#   tests against a predictable environment.
+
 services:
   # App
   app:
@@ -21,6 +29,8 @@ services:
     ports:
       - "33060:3306"
     healthcheck:
+      # Healthcheck helps docker-compose (and CI) wait until MySQL is
+      # ready before running dependent services or tests.
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pexample"]
       interval: 5s
       retries: 15
