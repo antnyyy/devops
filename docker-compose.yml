@@ -1,5 +1,9 @@
 version: '3.8'
 
+# Compose file for local testing: builds the app image and a seeded MySQL
+# instance. Useful for manual testing and for CI jobs that need an
+# available database.
+
 services:
   # App
   app:
@@ -21,6 +25,7 @@ services:
     ports:
       - "33060:3306"
     healthcheck:
+      # Ensure the DB service is ready before dependent services run.
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pexample"]
       interval: 5s
       retries: 15

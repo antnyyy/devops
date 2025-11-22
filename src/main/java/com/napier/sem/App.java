@@ -3,6 +3,14 @@ package com.napier.sem;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * Small CLI and data-access utility for the "world" sample database.
+ *
+ * Intended use: quick demos, manual queries while developing, and as the
+ * code-under-test for CI integration tests. The public methods provide
+ * simple query helpers that can be reused by other tooling or wrapped by
+ * a web layer if needed.
+ */
 public class App {
 
     // DB connection
@@ -35,6 +43,9 @@ public class App {
     }
 
     public void connect() {
+        // Load the MySQL JDBC driver and try to connect a few times. Waiting
+        // for the database like this is handy in containerised environments
+        // where the DB may not be ready immediately when the app starts.
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -51,6 +62,8 @@ public class App {
                 System.out.println("Successfully connected");
                 break;
             } catch (SQLException sqle) {
+                // Print the attempt and error so CI logs show the failure
+                // reason when the DB is not yet available.
                 System.out.println("Failed to connect to database attempt " + i);
                 System.out.println(sqle.getMessage());
             } catch (InterruptedException ignored) {}
@@ -86,6 +99,9 @@ public class App {
 
     //Reports
     public City getCity(int id) {
+        // Return a single city record by numeric ID. If there is no
+        // database connection the method returns null and logs a short
+        // message — callers can decide how to handle that case.
         if (con == null) { System.out.println("No DB connection."); return null; }
         String sql = "SELECT ID, Name, CountryCode, District, Population FROM city WHERE ID = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -109,6 +125,9 @@ public class App {
 
     public List<City> getTopCitiesInCountry(String countryCode, int limit) {
         List<City> cities = new ArrayList<>();
+        // Fetch the most populated cities for a country. A limit of 0 is
+        // treated as 1 to avoid returning an excessive result set by
+        // mistake.
         if (con == null) { System.out.println("No DB connection."); return cities; }
         String sql = "SELECT ID, Name, CountryCode, District, Population " +
                 "FROM city WHERE CountryCode = ? " +
@@ -135,6 +154,8 @@ public class App {
 
     public List<Country> getTopCountriesByPopulation(int limit) {
         List<Country> out = new ArrayList<>();
+        // Return the top countries ordered by population. Useful for quick
+        // ranking reports or sanity-checks during development.
         if (con == null) { System.out.println("No DB connection."); return out; }
         String sql = "SELECT Code, Name, Population FROM country ORDER BY Population DESC LIMIT ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -156,6 +177,8 @@ public class App {
 
     public List<ContinentPop> getPopulationByContinent() {
         List<ContinentPop> out = new ArrayList<>();
+        // Aggregate total population by continent. The result is ordered
+        // descending so callers can show the largest continents first.
         if (con == null) { System.out.println("No DB connection."); return out; }
         String sql = "SELECT Continent, SUM(Population) AS Pop FROM country GROUP BY Continent ORDER BY Pop DESC";
         try (PreparedStatement ps = con.prepareStatement(sql);
@@ -174,6 +197,8 @@ public class App {
 
     // Display helpers
     public void displayCity(City c) {
+        // Simple console formatter used by the CLI. In a service you would
+        // normally return JSON or render HTML instead of printing.
         if (c == null) { System.out.println("City not found."); return; }
         System.out.println("ID: " + c.id);
         System.out.println("Name: " + c.name);
@@ -225,6 +250,7 @@ public class App {
                 System.out.print("Choose: ");
                 String choice = sc.nextLine().trim();
 
+                // Quick interactive menu for manual use and demos.
                 switch (choice) {
                     case "1": {
                         System.out.print("Enter City ID: ");

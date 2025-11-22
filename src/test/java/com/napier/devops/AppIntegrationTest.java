@@ -9,9 +9,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration tests for App.java.
- * These tests assume a running MySQL instance with the "world" database,
- * reachable at jdbc:mysql://db:3306/world with user "root"/"example"
- * (i.e., the same settings used in App.connect()).
+ *
+ * These tests exercise the code against a running MySQL instance seeded
+ * with the provided `world.sql`. They are useful for CI and local
+ * validation of SQL queries and schema expectations. The database URL
+ * and credentials may be overridden via `DB_URL`, `DB_USER`, and
+ * `DB_PASS` environment variables.
+ *
+ * Tests expect the "world" database to be available at the configured
+ * JDBC URL (defaults to jdbc:mysql://localhost:33060/world in the test
+ * configuration used by the project's CI).
  */
 public class AppIntegrationTest {
 

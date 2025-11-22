@@ -8,7 +8,13 @@
     <artifactId>seMethods</artifactId>
     <version>0.1.0.2</version>
 
-    <dependencies>
+        <!--
+            Builds an assembled jar so the artifact can be executed in a
+            minimal runtime image. JaCoCo is configured to produce coverage
+            reports used by CI to track test coverage.
+        -->
+
+        <dependencies>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -18,9 +24,23 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.1.0</version>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+
+            <!-- Testing helpers: Mockito for fast unit tests that mock JDBC -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>5.5.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>5.5.0</version>
+                <scope>test</scope>
+            </dependency>
 
     </dependencies>
 
@@ -44,15 +64,17 @@
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.1.0</version>
+                        <version>5.10.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.7.1</version>   <!-- latest stable as of 2025 -->
                 <configuration>
+                    <finalName>seMethods</finalName>                  <!-- clean name -->
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>com.napier.sem.App</mainClass>
