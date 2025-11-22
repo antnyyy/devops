@@ -10,7 +10,7 @@ services:
     tty: true
 
   db:
-    image:mariadb:10.11             # ← switched to mariadb
+    image: mariadb:10.11             # ← switched to mariadb
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: example
