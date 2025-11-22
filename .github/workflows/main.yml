@@ -73,3 +73,12 @@ jobs:
           fail_ci_if_error: true
           flags: unittests
           name: java-coverage
+
+      - name: Create GitHub Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "latest"
+          files: |
+            ./target/*.jar
