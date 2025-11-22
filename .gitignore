@@ -34,3 +34,6 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 .idea/
+# local maven repository
+?/.m2/
+.m2/
