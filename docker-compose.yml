@@ -10,7 +10,7 @@ services:
     tty: true
 
   db:
-    image: mysql:8.0             # ← stop using your custom db/Dockerfile for now
+    image:mariadb:10.11             # ← switched to mariadb
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: example
@@ -18,9 +18,9 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
     ports:
       - "33060:3306"
-    command: --default-authentication-plugin=mysql_native_password
+    command: --wait-timeout=300
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pexample"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
       timeout: 5s
       retries: 20
