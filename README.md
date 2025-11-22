@@ -14,3 +14,24 @@
 
 docker compose up -d db
 docker compose run --rm app
+
+## Building locally if your host doesn't have JDK 17
+
+The project requires Java 17. If your local environment (or dev container) uses an older JDK, you can run Maven inside a Docker image that provides JDK 17.
+
+Use the included helper script:
+
+```bash
+# build the project using Maven + JDK17 in Docker
+./scripts/mvn.sh -DskipTests package
+
+# run with docker compose (the Dockerfile is multistage and will build the jar if needed)
+docker compose build --no-cache app
+docker compose run --rm app
+```
+
+Or run Maven directly with:
+
+```bash
+docker run --rm -v "$PWD":/workspace -w /workspace maven:3.9.6-eclipse-temurin-17 mvn -DskipTests package
+```
