@@ -1,4 +1,11 @@
-FROM amazoncorretto:17
-COPY ./target/seMethods-0.1.0.2-jar-with-dependencies.jar /tmp
-WORKDIR /tmp
-ENTRYPOINT ["java", "-jar", "seMethods-0.1.0.2-jar-with-dependencies.jar"]
+# Use the official Amazon Corretto 17 runtime
+FROM amazoncorretto:17-alpine-jdk
+
+# Copy the clean, correctly-named fat JAR
+COPY ./target/seMethods-jar-with-dependencies.jar /app/app.jar
+
+# Set working directory
+WORKDIR /app
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

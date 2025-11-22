@@ -51,8 +51,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.7.1</version>   <!-- latest stable as of 2025 -->
                 <configuration>
+                    <finalName>seMethods</finalName>                  <!-- clean name -->
+                    <appendAssemblyId>false</appendAssemblyId>
                     <archive>
                         <manifest>
                             <mainClass>com.napier.sem.App</mainClass>
