@@ -10,17 +10,18 @@ services:
     tty: true
 
   db:
-    build: db/.
+    image: mysql:8.0             # ← stop using your custom db/Dockerfile for now
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: example
-      MYSQL_ROOT_HOST: "%"
       MYSQL_DATABASE: world
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
     ports:
-      - "33060:3306"    # or 33061:3306 if you changed it before
+      - "33060:3306"
+    command: --default-authentication-plugin=mysql_native_password
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pexample"]
-      interval: 3s
-      timeout: 20s
-      retries: 10
-      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
