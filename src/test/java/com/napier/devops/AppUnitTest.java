@@ -10,6 +10,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests covering the display helpers and behavior when no database
+ * connection is present. These are quick-running checks intended for
+ * pre-merge validation during development and CI.
+ */
 class AppUnitTest {
 
     private final PrintStream originalOut = System.out;

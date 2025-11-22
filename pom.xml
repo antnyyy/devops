@@ -8,7 +8,13 @@
     <artifactId>seMethods</artifactId>
     <version>0.1.0.2</version>
 
-    <dependencies>
+        <!--
+            Builds an assembled jar so the artifact can be executed in a
+            minimal runtime image. JaCoCo is configured to produce coverage
+            reports used by CI to track test coverage.
+        -->
+
+        <dependencies>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

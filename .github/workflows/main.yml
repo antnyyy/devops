@@ -7,6 +7,9 @@ on:
     branches: [ "**" ]
   pull_request:
 
+# This workflow runs unit and integration tests. The release step below
+# is guarded so that releases are only created from `main` or from tags.
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
