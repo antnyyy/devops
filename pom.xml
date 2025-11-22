@@ -8,15 +8,6 @@
     <artifactId>seMethods</artifactId>
     <version>0.1.0.2</version>
 
-        <!--
-            Real-world packaging notes:
-            - The project produces an assembled "jar-with-dependencies" so the
-            - artifact can be run in minimal runtime containers for testing
-                and deployment.
-            - JaCoCo is configured to produce coverage reports used by CI to
-                track test quality over time.
-        -->
-
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>

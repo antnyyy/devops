@@ -3,20 +3,6 @@ package com.napier.sem;
 import java.sql.*;
 import java.util.*;
 
-/**
- * Application entrypoint and data access helpers for the "world" dataset.
- *
- * Real-world scenario context:
- * - This small CLI app demonstrates how a backend service might expose
- *   simple reporting queries (top cities, countries by population, etc.).
- * - In production this code would be part of a service used by analytics
- *   dashboards, incident response planners, or monitoring pipelines that
- *   need quick aggregated population metrics.
- * - The class provides a simple interactive CLI for exploration and a set
- *   of programmatic methods that are exercised by unit/integration tests
- *   during CI. Keeping a thin separation between DB access and display
- *   formatting makes it easier to reuse the data logic in real services.
- */
 public class App {
 
     // DB connection
@@ -49,10 +35,6 @@ public class App {
     }
 
     public void connect() {
-        // Load the JDBC driver and attempt to connect with a limited number
-        // of retries. This mirrors how a microservice might attempt to wait
-        // for its database dependency to become available when starting in
-        // containers or during CI runs (service start order is not guaranteed).
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -69,8 +51,6 @@ public class App {
                 System.out.println("Successfully connected");
                 break;
             } catch (SQLException sqle) {
-                // Log the attempt and continue retrying — in a real service
-                // you might back off exponentially and surface metrics.
                 System.out.println("Failed to connect to database attempt " + i);
                 System.out.println(sqle.getMessage());
             } catch (InterruptedException ignored) {}
@@ -106,10 +86,6 @@ public class App {
 
     //Reports
     public City getCity(int id) {
-        // Example scenario: REST endpoint may call this method to fetch city
-        // details for a location lookup widget. We return null when there's
-        // no DB connection so the caller can decide whether to show cached
-        // data, a friendly error, or a retry option.
         if (con == null) { System.out.println("No DB connection."); return null; }
         String sql = "SELECT ID, Name, CountryCode, District, Population FROM city WHERE ID = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -133,8 +109,6 @@ public class App {
 
     public List<City> getTopCitiesInCountry(String countryCode, int limit) {
         List<City> cities = new ArrayList<>();
-        // Real-world use: used by dashboards showing the largest urban
-        // centres per country (e.g., for capacity planning or market sizing).
         if (con == null) { System.out.println("No DB connection."); return cities; }
         String sql = "SELECT ID, Name, CountryCode, District, Population " +
                 "FROM city WHERE CountryCode = ? " +
@@ -161,9 +135,6 @@ public class App {
 
     public List<Country> getTopCountriesByPopulation(int limit) {
         List<Country> out = new ArrayList<>();
-        // Scenario: administrative UI or analytics job requests the top
-        // populated countries. This method returns a compact list of country
-        // meta for reporting or further downstream aggregation.
         if (con == null) { System.out.println("No DB connection."); return out; }
         String sql = "SELECT Code, Name, Population FROM country ORDER BY Population DESC LIMIT ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -185,8 +156,6 @@ public class App {
 
     public List<ContinentPop> getPopulationByContinent() {
         List<ContinentPop> out = new ArrayList<>();
-        // Scenario: create a high-level map view that colours continents by
-        // population; this provides the aggregate values for that feature.
         if (con == null) { System.out.println("No DB connection."); return out; }
         String sql = "SELECT Continent, SUM(Population) AS Pop FROM country GROUP BY Continent ORDER BY Pop DESC";
         try (PreparedStatement ps = con.prepareStatement(sql);
@@ -205,9 +174,6 @@ public class App {
 
     // Display helpers
     public void displayCity(City c) {
-        // Small helper used by the CLI; in a deployed service these
-        // formatting routines would be replaced by JSON serializers
-        // or templated HTML responses for a web UI.
         if (c == null) { System.out.println("City not found."); return; }
         System.out.println("ID: " + c.id);
         System.out.println("Name: " + c.name);
@@ -259,10 +225,6 @@ public class App {
                 System.out.print("Choose: ");
                 String choice = sc.nextLine().trim();
 
-                // CLI menu: useful for manual validation, demos or when a
-                // support engineer needs to quickly query the dataset from
-                // the running container. Production services usually expose
-                // the same operations via HTTP endpoints.
                 switch (choice) {
                     case "1": {
                         System.out.print("Enter City ID: ");

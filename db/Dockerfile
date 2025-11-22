@@ -1,18 +1,13 @@
-# This image is used for integration testing and local development.
-# Real-world scenario context:
-# - The container initialises a MySQL instance and loads the canonical
-#   `world` dataset. CI can use this image (via docker-compose or GitHub
-#   Actions services) to run integration tests against a known dataset.
+# Use the latest MySQL image
 FROM mysql/mysql-server:latest
+# Set the working directory
 WORKDIR /tmp
-
-# Copy the seed SQL file and ensure it's executed by MySQL on first start.
-# The official MySQL images execute files placed under
-# `/docker-entrypoint-initdb.d` during initialisation.
+# Copy all the files to the working directory of the container
 COPY world-db/world.sql /tmp/
+# Copy the main SQL file to docker-entrypoint-initdb.d.
+# Scripts and SQL files in this folder are executed on container startup.
+# This is specific to MySQL.
 COPY world-db/world.sql /docker-entrypoint-initdb.d
-
-# Default credentials used for CI integration tests. In production these
-# would be replaced with secure secrets and not baked into the image.
+# Set the root password
 ENV MYSQL_ROOT_PASSWORD=example
 ENV MYSQL_ROOT_HOST=%
