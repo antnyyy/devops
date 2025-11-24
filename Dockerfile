@@ -11,9 +11,10 @@ COPY src ./src
 
 # build the assembly jar (assembly plugin configured in pom.xml)
 RUN mvn -DskipTests package
+RUN ls -R target
 
 FROM amazoncorretto:17
 # copy the assembled "jar-with-dependencies" from the builder stage
-COPY --from=builder /workspace/target/seMethods-0.1.0.2-jar-with-dependencies.jar /tmp/
+COPY --from=builder /workspace/target/*.jar /tmp/app.jar
 WORKDIR /tmp
-ENTRYPOINT ["java", "-jar", "seMethods-0.1.0.2-jar-with-dependencies.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
