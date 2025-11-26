@@ -8,7 +8,7 @@
 [![Releases](https://img.shields.io/github/release/antnyyy/devops/all.svg?style=flat-square)](https://github.com/antnyyy/devops/releases)
 
 # Bug Reporting
-![BUG REPORT]((https://github.com/antnyyy/devops/issues)) :
+[![BUG REPORT]((https://github.com/antnyyy/devops/issues))] :
 - Click on New Issue, then select Bug Report.
   
 # Codecov
