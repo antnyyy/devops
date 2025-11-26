@@ -20,8 +20,7 @@ public class App {
         );
     }
 
-    // Extra constructor – for tests or custom configs
-    public App(String dbUrl, String dbUser, String dbPassword) {
+        public App(String dbUrl, String dbUser, String dbPassword) {
         this.dbUrl = dbUrl;
         this.dbUser = dbUser;
         this.dbPassword = dbPassword;
@@ -1004,7 +1003,7 @@ public class App {
     private void menu() {
         try (Scanner sc = new Scanner(System.in)) {
             while (true) {
-                System.out.println("\n=== MAIN MENU ===");
+                System.out.println("\n-======- MAIN MENU -======-");
                 System.out.println(" 1) City by ID");
                 System.out.println(" 2) Top N cities in a country");
                 System.out.println(" 3) Top N countries by population");
